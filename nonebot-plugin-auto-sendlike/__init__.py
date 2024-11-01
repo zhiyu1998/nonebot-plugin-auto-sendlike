@@ -6,12 +6,13 @@ from nonebot import on_regex, logger, get_bot, require
 from nonebot.adapters import Bot
 from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent
 from nonebot.plugin import PluginMetadata
-from nonebot_plugin_apscheduler import scheduler
-
-from .config import Config
 
 # 导入调度器
 require("nonebot_plugin_apscheduler")
+
+from nonebot_plugin_apscheduler import scheduler
+
+from .config import Config
 
 __plugin_meta__ = PluginMetadata(
     name="自动点赞订阅赞",
