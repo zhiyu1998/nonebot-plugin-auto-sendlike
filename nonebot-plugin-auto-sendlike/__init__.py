@@ -23,6 +23,9 @@ def save_sub_user(sub_user):
     :param sub_user: 订阅用户列表
     :return: None
     """
+    # 递归创建目录
+    sub_user_save_path.parent.mkdir(parents=True, exist_ok=True)
+
     with open(sub_user_save_path, 'wb') as f:
         pickle.dump(sub_user, f)
 
