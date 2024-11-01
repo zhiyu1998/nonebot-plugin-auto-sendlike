@@ -1,14 +1,27 @@
-import pickle
 import asyncio
+import pickle
 from pathlib import Path
 
 from nonebot import on_regex, logger, get_bot, require
 from nonebot.adapters import Bot
 from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent
+from nonebot.plugin import PluginMetadata
 from nonebot_plugin_apscheduler import scheduler
+
+from .config import Config
 
 # 导入调度器
 require("nonebot_plugin_apscheduler")
+
+__plugin_meta__ = PluginMetadata(
+    name="自动点赞订阅赞",
+    description="Nonebot2 的点赞、订阅赞功能，每天 12 点定时点赞👍！轻量、高效、便捷的小插件！",
+    usage="通过直接发送：点赞，或者发送：订阅赞，每天定时12为你点赞",
+    type="application",
+    homepage="https://github.com/zhiyu1998/nonebot-plugin-auto-sendlike",
+    config=Config,
+    supported_adapters={ "~onebot.v11", "~qq" }
+)
 
 zan = on_regex("^(超|赞)(市|)我$", permission=GROUP)
 zan_sub = on_regex("^订阅(超|赞)$", permission=GROUP)
@@ -63,6 +76,7 @@ async def dian_zan(bot: Bot, user_id):
         logger.error(f"点赞失败: {e}")
     return count
 
+
 @zan.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     """
@@ -76,7 +90,6 @@ async def _(bot: Bot, event: GroupMessageEvent):
         await zan.send(f"已经给你点了{count}个赞！如果失败可以添加好友再试！")
     else:
         await zan.finish(f"我给不了你更多了哟~")
-
 
 
 @zan_sub.handle()
