@@ -78,4 +78,4 @@ _✨一个轻量、高效、便捷的小插件！ （Logo 源自我的朋友🐶
 
 ### 效果图
 
-@todo
+![](https://s2.loli.net/2024/11/01/KeGJRWLwfTqZdr3.png)
