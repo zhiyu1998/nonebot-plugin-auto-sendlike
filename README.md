@@ -9,7 +9,9 @@
 
 # nonebot-plugin-auto-sendlike
 
-_✨适用于 nonebot2 的点赞、订阅赞功能，每天 12 点定时点赞👍！轻量、高效、便捷的小插件！ ✨_
+_✨适用于 nonebot2 的点赞、订阅赞功能，每天 12 点定时点赞👍！✨_
+
+一个轻量、高效、便捷的小插件！ （Logo 源自我的朋友🐶哥小助手的延伸）
 
 <a href="./LICENSE">
     <img src="https://img.shields.io/github/license/owner/nonebot-plugin-template.svg" alt="license">
