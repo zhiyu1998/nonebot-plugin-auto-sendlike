@@ -1,11 +1,14 @@
 import asyncio
-import pickle
-from pathlib import Path
+import json
 
 from nonebot import on_regex, logger, get_bot, require
 from nonebot.adapters import Bot
 from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent
 from nonebot.plugin import PluginMetadata
+
+require("nonebot_plugin_localstore")
+
+import nonebot_plugin_localstore as store
 
 # 导入调度器
 require("nonebot_plugin_apscheduler")
@@ -21,27 +24,20 @@ __plugin_meta__ = PluginMetadata(
     type="application",
     homepage="https://github.com/zhiyu1998/nonebot-plugin-auto-sendlike",
     config=Config,
-    supported_adapters={ "~onebot.v11", "~qq" }
+    supported_adapters={ "~onebot.v11" }
 )
 
 zan = on_regex("^(超|赞)(市|)我$", permission=GROUP)
 zan_sub = on_regex("^订阅(超|赞)$", permission=GROUP)
 
-# 保存订阅用户的位置
-sub_user_save_path = Path('./data/resolver/sub_user.pkl').resolve()
 
-
-def save_sub_user(sub_user):
+def save_sub_user():
     """
     使用pickle将对象保存到文件
-    :param sub_user: 订阅用户列表
     :return: None
     """
-    # 递归创建目录
-    sub_user_save_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with open(sub_user_save_path, 'wb') as f:
-        pickle.dump(sub_user, f)
+    data_file = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
+    data_file.write_text(json.dumps(sub_user))
 
 
 def load_sub_user():
@@ -49,16 +45,13 @@ def load_sub_user():
     从文件中加载对象
     :return: 订阅用户列表
     """
-    if sub_user_save_path.exists():
-        with open(sub_user_save_path, 'rb') as f:
-            return pickle.load(f)
-    else:
-        return []
+    data_file = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
+    return json.loads(data_file.read_text())
 
 
 # 加载订阅用户
-sub_user = load_sub_user()
-
+sub_user: list = list(load_sub_user())
+logger.info(f"订阅用户列表：{sub_user}")
 
 async def dian_zan(bot: Bot, user_id):
     """
@@ -104,7 +97,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     user_id = event.user_id
     if user_id not in sub_user:
         sub_user.append(user_id)
-        save_sub_user(sub_user)
+        save_sub_user()
         await zan_sub.finish(f"订阅成功了哟~")
     else:
         await zan_sub.finish(f"你已经订阅过了哟~")
@@ -118,9 +111,9 @@ async def run_subscribed_likes():
     """
     if len(sub_user) > 0:
         for user_id in sub_user:
-            is_zan = await dian_zan(get_bot(), user_id)
-            if is_zan:
-                logger.info(f"[👍订阅赞] 给用户 {user_id} 点赞成功")
+            count = await dian_zan(get_bot(), user_id)
+            if count > 0:
+                logger.info(f"[👍订阅赞] 给用户 {user_id} 点赞 {count} 次成功")
             else:
                 logger.warning(f"[👍订阅赞] 给用户 {user_id} 点赞失败")
             await asyncio.sleep(5)

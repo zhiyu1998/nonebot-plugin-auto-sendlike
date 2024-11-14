@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "nonebot-plugin-auto-sendlike"
-version = "0.0.4"
+version = "0.0.5"
 description = "Nonebot2 的点赞、订阅赞功能，每天 12 点定时点赞👍！轻量、高效、便捷的小插件！"
 authors = ["zhiyu1998 <renzhiyu0416@qq.com>"]
 readme = "README.md"
@@ -12,6 +12,7 @@ keywords = ["nonebot", "nonebot2", "resolver"]
 python = ">=3.9"
 nonebot2 = ">=2.0.0"
 nonebot_plugin_apscheduler = "^0.5.0"
+nonebot_plugin_localstore = "^0.6.0"
 nonebot-adapter-onebot = ">=2.0.0-beta.1"
 
 [build-system]
