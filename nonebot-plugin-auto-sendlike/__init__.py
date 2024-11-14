@@ -1,5 +1,6 @@
 import asyncio
 import json
+from pathlib import Path
 
 from nonebot import on_regex, logger, get_bot, require
 from nonebot.adapters import Bot
@@ -45,6 +46,10 @@ def load_sub_user():
     从文件中加载对象
     :return: 订阅用户列表
     """
+    data_path = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
+    # 判断是否存在
+    if not data_path.exists():
+        data_path.write_text(json.dumps([]))
     data_file = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
     return json.loads(data_file.read_text())
 
