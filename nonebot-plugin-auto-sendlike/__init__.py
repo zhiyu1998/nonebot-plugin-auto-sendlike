@@ -16,15 +16,12 @@ require("nonebot_plugin_apscheduler")
 
 from nonebot_plugin_apscheduler import scheduler
 
-from .config import Config
-
 __plugin_meta__ = PluginMetadata(
     name="自动点赞订阅赞",
     description="Nonebot2 的点赞、订阅赞功能，每天 12 点定时点赞👍！轻量、高效、便捷的小插件！",
     usage="通过直接发送：点赞，或者发送：订阅赞，每天定时12为你点赞",
     type="application",
     homepage="https://github.com/zhiyu1998/nonebot-plugin-auto-sendlike",
-    config=Config,
     supported_adapters={ "~onebot.v11" }
 )
 
@@ -46,11 +43,10 @@ def load_sub_user():
     从文件中加载对象
     :return: 订阅用户列表
     """
-    data_path = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
-    # 判断是否存在
-    if not data_path.exists():
-        data_path.write_text(json.dumps([]))
     data_file = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
+    # 判断是否存在
+    if not data_file.exists():
+        data_file.write_text(json.dumps([]))
     return json.loads(data_file.read_text())
 
 
