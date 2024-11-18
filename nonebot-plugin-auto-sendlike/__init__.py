@@ -34,7 +34,7 @@ def save_sub_user():
     使用pickle将对象保存到文件
     :return: None
     """
-    data_file = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
+    data_file = store.get_plugin_data_file("sub_user")
     data_file.write_text(json.dumps(sub_user))
 
 
@@ -43,7 +43,7 @@ def load_sub_user():
     从文件中加载对象
     :return: 订阅用户列表
     """
-    data_file = store.get_data_file("nonebot-plugin-auto-sendlike", "sub_user")
+    data_file = store.get_plugin_data_file("sub_user")
     # 判断是否存在
     if not data_file.exists():
         data_file.write_text(json.dumps([]))
