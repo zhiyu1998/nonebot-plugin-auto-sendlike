@@ -52,7 +52,7 @@ def load_sub_user():
         return existing_sub_users
     except json.JSONDecodeError:
         logger.error("订阅用户数据文件解码错误，将创建一个新的文件。")
-        return [DEFAULT_SUB_USER]  # 如果文件解码错误，也添加默认用户
+        return [DEFAULT_SUB_USER]  # 如果文件解码错误，重新创建一个文件
 
 
 # 加载订阅用户
@@ -145,7 +145,7 @@ async def run_subscribed_likes():
         for user_id in sub_user:
             count = await dian_zan(get_bot(), user_id)
             if count > 0:
-                logger.info(f"[👍订阅赞] 给用户 {user_id} 点赞 {count} 次成功")
+                logger.info(f"[👍订阅赞] 给用户 {user_id} 成功点赞 {count} 次")
             else:
                 logger.warning(f"[👍订阅赞] 给用户 {user_id} 点赞失败")
             await asyncio.sleep(5)
