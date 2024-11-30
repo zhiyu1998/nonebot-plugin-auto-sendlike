@@ -25,7 +25,7 @@ __plugin_meta__ = PluginMetadata(
     supported_adapters={ "~onebot.v11" }
 )
 
-zan = on_regex("^(超|赞)(市|)我$", permission=GROUP)
+zan = on_regex("(超|赞)(市|)我$", permission=GROUP)
 zan_sub = on_regex("^订阅(超|赞)$", permission=GROUP)
 
 
