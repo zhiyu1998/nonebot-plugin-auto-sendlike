@@ -1,64 +1,58 @@
 import asyncio
 import json
-import re
 from pathlib import Path
 
 from nonebot import on_regex, logger, get_bot, require
 from nonebot.adapters import Bot
-from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent, Event
+from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent
 from nonebot.plugin import PluginMetadata
 
 require("nonebot_plugin_localstore")
+
 import nonebot_plugin_localstore as store
 
+# 导入调度器
 require("nonebot_plugin_apscheduler")
+
 from nonebot_plugin_apscheduler import scheduler
 
 __plugin_meta__ = PluginMetadata(
     name="自动点赞订阅赞",
-    description="Nonebot2 的点赞、订阅赞功能，每天 0 点定时点赞👍！轻量、高效、便捷的小插件！",
-    usage="通过直接发送：点赞，或者发送：订阅赞，每天定时0为你点赞",
+    description="Nonebot2 的点赞、订阅赞功能，每天 12 点定时点赞👍！轻量、高效、便捷的小插件！",
+    usage="通过直接发送：点赞，或者发送：订阅赞，每天定时12为你点赞",
     type="application",
     homepage="https://github.com/zhiyu1998/nonebot-plugin-auto-sendlike",
-    supported_adapters={"~onebot.v11"}
+    supported_adapters={ "~onebot.v11" }
 )
 
-zan = on_regex("(超|赞)(市|)我$", permission=GROUP)
+zan = on_regex("^(超|赞)(市|)我$", permission=GROUP)
 zan_sub = on_regex("^订阅(超|赞)$", permission=GROUP)
 zan_other = on_regex(r"^(超|赞)(市|)(你|他|她|它|TA|)\s*(.*)$", permission=GROUP)
 
-
-sub_user_lock = asyncio.Lock()  # 用于并发控制的锁
-sub_user: list[int] = []
-
-
 def save_sub_user():
+    """
+    使用pickle将对象保存到文件
+    :return: None
+    """
     data_file = store.get_plugin_data_file("sub_user")
-    data_file.write_text(json.dumps(sub_user), encoding='utf-8')
+    data_file.write_text(json.dumps(sub_user))
 
-DEFAULT_SUB_USER = 745147764 # 某个不要脸的强占默认订阅位置，介意可去掉
 
 def load_sub_user():
+    """
+    从文件中加载对象
+    :return: 订阅用户列表
+    """
     data_file = store.get_plugin_data_file("sub_user")
+    # 判断是否存在
     if not data_file.exists():
-        initial_sub_users = [DEFAULT_SUB_USER]
-        data_file.write_text(json.dumps(initial_sub_users), encoding='utf-8')
-        return initial_sub_users
-    try:
-        existing_sub_users = json.loads(data_file.read_text(encoding='utf-8'))
-        if DEFAULT_SUB_USER not in existing_sub_users:  # 检查是否存在，如果不存在则添加
-            existing_sub_users.append(DEFAULT_SUB_USER)
-            data_file.write_text(json.dumps(existing_sub_users), encoding='utf-8')
-        return existing_sub_users
-    except json.JSONDecodeError:
-        logger.error("订阅用户数据文件解码错误，将创建一个新的文件。")
-        return [DEFAULT_SUB_USER]  # 如果文件解码错误，重新创建一个文件
+        data_file.write_text(json.dumps([]))
+    return json.loads(data_file.read_text())
 
 
 # 加载订阅用户
 sub_user: list = list(load_sub_user())
 logger.info(f"订阅用户列表：{sub_user}")
-
 
 async def dian_zan(bot: Bot, user_id):
     """
@@ -72,14 +66,13 @@ async def dian_zan(bot: Bot, user_id):
         for i in range(5):
             await bot.send_like(user_id=user_id, times=10)  # type: ignore
             count += 10
-            logger.info(f"给 {user_id} 点赞成功，当前点赞次数：{count}")
+            logger.info(f"点赞成功，当前点赞次数：{count}")
     except Exception as e:
         logger.error(f"点赞失败: {e}")
     return count
 
-
 @zan_other.handle()
-async def _(bot: Bot, event: Event):
+async def zan_other_(bot: Bot, event: Event):
     message = str(event.get_message()).strip()
     match = r"[1-9]([0-9]{5,11})"
 
@@ -101,8 +94,7 @@ async def _(bot: Bot, event: Event):
             await zan_other.finish(f"😢我给不了他更多了哟~")
     else:
         await zan_other.finish("未指定有效的QQ号或@用户")
-
-
+        
 @zan.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     """
@@ -115,7 +107,7 @@ async def _(bot: Bot, event: GroupMessageEvent):
     if count != 0:
         await zan.send(f"已经给你点了{count}个赞！如果失败可以添加好友再试！")
     else:
-        await zan.finish(f"😢我给不了你更多了哟~")
+        await zan.finish(f"我给不了你更多了哟~")
 
 
 @zan_sub.handle()
@@ -145,7 +137,7 @@ async def run_subscribed_likes():
         for user_id in sub_user:
             count = await dian_zan(get_bot(), user_id)
             if count > 0:
-                logger.info(f"[👍订阅赞] 给用户 {user_id} 成功点赞 {count} 次")
+                logger.info(f"[👍订阅赞] 给用户 {user_id} 点赞 {count} 次成功")
             else:
                 logger.warning(f"[👍订阅赞] 给用户 {user_id} 点赞失败")
             await asyncio.sleep(5)
