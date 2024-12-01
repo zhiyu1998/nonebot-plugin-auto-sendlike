@@ -27,7 +27,7 @@ __plugin_meta__ = PluginMetadata(
 
 zan = on_regex("^(超|赞)(市|)我$", permission=GROUP)
 zan_sub = on_regex("^订阅(超|赞)$", permission=GROUP)
-
+zan_other = on_regex(r"^(超|赞)(市|)(你|他|她|它|TA|)\s*(.*)$", permission=GROUP)
 
 def save_sub_user():
     """
@@ -71,7 +71,30 @@ async def dian_zan(bot: Bot, user_id):
         logger.error(f"点赞失败: {e}")
     return count
 
+@zan_other.handle()
+async def zan_other_(bot: Bot, event: Event):
+    message = str(event.get_message()).strip()
+    match = r"[1-9]([0-9]{5,11})"
 
+    # 使用 search 进行匹配，如果匹配成功则返回匹配对象，否则返回 None
+    match_result = re.search(match, message)
+
+    # 检查匹配结果是否成功
+    if not match_result:
+        # 如果匹配失败，则直接返回，跳出操作
+        return
+
+    user_id = int(match_result.group(0))
+
+    if user_id:
+        count = await dian_zan(bot, user_id)
+        if count > 0:
+            await zan_other.finish(f"已经给 {user_id} 点了 {count} 个赞！")
+        else:
+            await zan_other.finish(f"😢我给不了他更多了哟~")
+    else:
+        await zan_other.finish("未指定有效的QQ号或@用户")
+        
 @zan.handle()
 async def _(bot: Bot, event: GroupMessageEvent):
     """
