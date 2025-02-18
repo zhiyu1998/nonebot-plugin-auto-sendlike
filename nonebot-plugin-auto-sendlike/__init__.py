@@ -28,6 +28,7 @@ __plugin_meta__ = PluginMetadata(
 zan = on_regex("^(超|赞)(市|)我$", permission=GROUP)
 zan_sub = on_regex("^订阅(超|赞)$", permission=GROUP)
 zan_other = on_regex(r"^(超|赞)(市|)(你|他|她|它|TA|)\s*(.*)$", permission=GROUP)
+zan_unsub = on_regex("^取消订阅(超|赞)$", permission=GROUP)
 
 def save_sub_user():
     """
@@ -126,6 +127,21 @@ async def _(bot: Bot, event: GroupMessageEvent):
     else:
         await zan_sub.finish(f"你已经订阅过了哟~")
 
+@zan_unsub.handle()
+async def _(bot: Bot, event: GroupMessageEvent):
+    """
+    处理取消订阅点赞事件
+    :param bot: Bot对象
+    :param event: 事件对象
+    :return: None
+    """
+    user_id = event.user_id
+    if user_id in sub_user:
+        sub_user.remove(user_id)
+        save_sub_user()
+        await zan_unsub.finish(f"已成功取消订阅点赞！")
+    else:
+        await zan_unsub.finish(f"你还没有订阅过呢~")
 
 @scheduler.scheduled_job('cron', hour=0, id="job_subscribed_likes")
 async def run_subscribed_likes():
