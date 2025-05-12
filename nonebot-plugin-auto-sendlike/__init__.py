@@ -4,7 +4,7 @@ from pathlib import Path
 
 from nonebot import on_regex, logger, get_bot, require
 from nonebot.adapters import Bot
-from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent
+from nonebot.adapters.onebot.v11 import GROUP, GroupMessageEvent, Event
 from nonebot.plugin import PluginMetadata
 
 require("nonebot_plugin_localstore")
