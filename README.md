@@ -77,6 +77,16 @@ _✨一个轻量、高效、便捷的小插件！ （Logo 源自我的朋友🐶
 | 赞他  | 群员 | 否 | 群聊 | @用户 或 指定QQ |
 | 订阅赞 | 群员 | 否 | 群聊 | 指令说明 |
 
-### 效果图
+
+### 👍 效果图
 
 ![](https://s2.loli.net/2024/11/01/KeGJRWLwfTqZdr3.png)
+
+
+## 🌸 贡献
+
+同时感谢以下开发者对 `nonebot-auto-sendlike` 作出的贡献：
+
+<a href="https://github.com/zhiyu1998/nonebot-plugin-auto-sendlike/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=zhiyu1998/nonebot-plugin-auto-sendlike&max=1000" />
+</a>
